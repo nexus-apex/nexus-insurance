@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Policies | NexusInsurance{% endblock %}
+{% block page_title %}Policies{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search policies...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Policy Type</option>
+      <option value="life" {% if status_filter == 'life' %}selected{% endif %}>Life</option>
+      <option value="health" {% if status_filter == 'health' %}selected{% endif %}>Health</option>
+      <option value="motor" {% if status_filter == 'motor' %}selected{% endif %}>Motor</option>
+      <option value="property" {% if status_filter == 'property' %}selected{% endif %}>Property</option>
+      <option value="travel" {% if status_filter == 'travel' %}selected{% endif %}>Travel</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/policies/create/" class="btn btn-primary">+ New Policy</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Policy Number</th><th>Holder Name</th><th>Policy Type</th><th>Premium</th><th>Coverage</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/policies/{{ r.pk }}/edit/"><strong>{{ r.policy_number }}</strong></a></td>
+        <td>{{ r.holder_name|default:"-" }}</td>
+        <td><span class="badge badge-blue">{{ r.get_policy_type_display }}</span></td>
+        <td>{{ r.premium|floatformat:2 }}</td>
+        <td>{{ r.coverage|floatformat:2 }}</td>
+        <td class="actions">
+          <a href="/policies/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/policies/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No policies found.</p>
+    <a href="/policies/create/" class="btn btn-primary" style="margin-top:1rem">Create Policy</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
