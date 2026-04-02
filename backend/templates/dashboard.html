@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | NexusInsurance{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total Policies</div>
+    <div class="stat-value">{{ policy_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Claims</div>
+    <div class="stat-value" style="background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;background-clip:text">{{ claim_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Insurecustomers</div>
+    <div class="stat-value" style="background:linear-gradient(135deg,#f59e0b,#f97316);-webkit-background-clip:text;background-clip:text">{{ insurecustomer_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Premium</div>
+    <div class="stat-value" style="background:linear-gradient(135deg,#ef4444,#ec4899);-webkit-background-clip:text;background-clip:text">{{ policy_total_premium|floatformat:0 }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h3>Recent Policies</h3>
+    <a href="/policies/create/" class="btn btn-primary btn-sm">+ New Policy</a>
+  </div>
+  {% if recent %}
+  <table>
+    <thead>
+      <tr><th>Policy Number</th><th>Holder Name</th><th>Policy Type</th><th>Premium</th><th>Coverage</th><th>Created</th></tr>
+    </thead>
+    <tbody>
+      {% for r in recent %}
+      <tr>
+        <td><a href="/policies/{{ r.pk }}/edit/">{{ r.policy_number }}</a></td>
+        <td>{{ r.holder_name|default:"-" }}</td><td><span class="badge badge-blue">{{ r.get_policy_type_display }}</span></td><td>{{ r.premium|floatformat:2 }}</td><td>{{ r.coverage|floatformat:2 }}</td><td style="color:var(--muted)">{{ r.created_at|date:"M d, Y" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No records yet.</p>
+    <a href="/policies/create/" class="btn btn-primary" style="margin-top:1rem">Create First Policy</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
