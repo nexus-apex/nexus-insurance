@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit{% else %}New{% endif %} Claim | NexusInsurance{% endblock %}
+{% block page_title %}{% if editing %}Edit Claim{% else %}New Claim{% endif %}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:750px">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group">
+        <label>Claim Number</label>
+        <input type="text" name="claim_number" value="{{ record.claim_number|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label>Policy Number</label>
+        <input type="text" name="policy_number" value="{{ record.policy_number|default:'' }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Claimant</label>
+        <input type="text" name="claimant" value="{{ record.claimant|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label>Claim Type</label>
+        <select name="claim_type">
+          <option value="cashless" {% if record.claim_type == 'cashless' %}selected{% endif %}>Cashless</option>
+          <option value="reimbursement" {% if record.claim_type == 'reimbursement' %}selected{% endif %}>Reimbursement</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Amount</label>
+        <input type="number" step="0.01" name="amount" value="{{ record.amount|default:'0' }}">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status">
+          <option value="filed" {% if record.status == 'filed' %}selected{% endif %}>Filed</option>
+          <option value="under_review" {% if record.status == 'under_review' %}selected{% endif %}>Under Review</option>
+          <option value="approved" {% if record.status == 'approved' %}selected{% endif %}>Approved</option>
+          <option value="rejected" {% if record.status == 'rejected' %}selected{% endif %}>Rejected</option>
+          <option value="settled" {% if record.status == 'settled' %}selected{% endif %}>Settled</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Filed Date</label>
+        <input type="date" name="filed_date" value="{{ record.filed_date|date:'Y-m-d'|default:'' }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description">{{ record.description|default:'' }}</textarea>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;margin-top:1rem">
+      <button type="submit" class="btn btn-primary">{% if editing %}Update{% else %}Create{% endif %} Claim</button>
+      <a href="/claims/" class="btn" style="background:var(--border);color:var(--text)">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
