@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Claims | NexusInsurance{% endblock %}
+{% block page_title %}Claims{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search claims...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Claim Type</option>
+      <option value="cashless" {% if status_filter == 'cashless' %}selected{% endif %}>Cashless</option>
+      <option value="reimbursement" {% if status_filter == 'reimbursement' %}selected{% endif %}>Reimbursement</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/claims/create/" class="btn btn-primary">+ New Claim</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Claim Number</th><th>Policy Number</th><th>Claimant</th><th>Claim Type</th><th>Amount</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/claims/{{ r.pk }}/edit/"><strong>{{ r.claim_number }}</strong></a></td>
+        <td>{{ r.policy_number|default:"-" }}</td>
+        <td>{{ r.claimant|default:"-" }}</td>
+        <td><span class="badge badge-blue">{{ r.get_claim_type_display }}</span></td>
+        <td>{{ r.amount|floatformat:2 }}</td>
+        <td class="actions">
+          <a href="/claims/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/claims/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No claims found.</p>
+    <a href="/claims/create/" class="btn btn-primary" style="margin-top:1rem">Create Claim</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
